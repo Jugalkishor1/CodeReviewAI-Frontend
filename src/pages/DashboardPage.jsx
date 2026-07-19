@@ -1,83 +1,73 @@
-import { Alert } from '../components/Alert'
-import { PullRequestDetail } from '../components/PullRequestDetail'
-import { PullRequestList } from '../components/PullRequestList'
-import { ReviewHistory } from '../components/ReviewHistory'
+import { useEffect } from 'react'
+import { useStore } from '../store'
 import { Sidebar } from '../components/Sidebar'
 import { Topbar } from '../components/Topbar'
-import { useAuth } from '../hooks/useAuth'
-import { usePullRequests } from '../hooks/usePullRequests'
-import { useRepositories } from '../hooks/useRepositories'
-import { useReviews } from '../hooks/useReviews'
-import { useTheme } from '../hooks/useTheme'
+import { PullRequestList } from '../components/PullRequestList'
+import { PullRequestDetail } from '../components/PullRequestDetail'
+import { ReviewHistory } from '../components/ReviewHistory'
 
 export function DashboardPage() {
-  const { user, error, logout, clearError } = useAuth()
-  const { theme, toggleTheme } = useTheme()
-  const {
-    repositories,
-    selectedRepository,
-    search,
-    loading: reposLoading,
-    setSearch,
-    selectRepository,
-  } = useRepositories()
-  const {
-    pullRequests,
-    selectedPullRequest,
-    activeReview,
-    loading,
-    selectPullRequest,
-    runReview,
-  } = usePullRequests()
-  const { reviews, loading: reviewsLoading, loadReviews, openReviewFromHistory } = useReviews()
+  const store = useStore()
+  const search = useStore((s) => s.search)
 
-  async function handleRunReview() {
-    const review = await runReview()
-    if (review) loadReviews()
-  }
+  useEffect(() => {
+    useStore.getState().loadUser()
+    useStore.getState().loadReviews()
+  }, [])
+
+  useEffect(() => {
+    const timeout = window.setTimeout(() => useStore.getState().loadRepos(search), 250)
+    return () => window.clearTimeout(timeout)
+  }, [search])
 
   return (
     <main className="app-shell">
       <Sidebar
-        repositories={repositories}
-        selectedRepository={selectedRepository}
-        search={search}
-        loading={reposLoading}
-        onSearchChange={setSearch}
-        onSelectRepository={selectRepository}
+        repositories={store.repositories}
+        selectedRepository={store.selectedRepository}
+        search={store.search}
+        loading={store.loading.repos}
+        onSearchChange={store.setSearch}
+        onSelectRepository={store.selectRepo}
       />
 
       <section className="workspace">
         <Topbar
-          user={user}
-          theme={theme}
-          onToggleTheme={toggleTheme}
-          onLogout={logout}
+          user={store.user}
+          theme={store.theme}
+          onToggleTheme={store.toggleTheme}
+          onLogout={store.logout}
         />
 
-        <Alert message={error} onDismiss={clearError} />
+        {store.error && (
+          <div className="alert">
+            <span>{store.error}</span>
+            <button type="button" onClick={store.clearError}>Dismiss</button>
+          </div>
+        )}
 
         <div className="content-grid">
           <PullRequestList
-            repository={selectedRepository}
-            pullRequests={pullRequests}
-            selectedPullRequest={selectedPullRequest}
-            loading={loading.pullRequests}
-            onSelect={selectPullRequest}
+            repository={store.selectedRepository}
+            pullRequests={store.pullRequests}
+            selectedPullRequest={store.selectedPullRequest}
+            loading={store.loading.prs}
+            onSelect={store.selectPr}
           />
           <PullRequestDetail
-            pullRequest={selectedPullRequest}
-            review={activeReview}
-            loading={loading.pullRequest}
-            reviewing={loading.review}
-            onRunReview={handleRunReview}
+            pullRequest={store.selectedPullRequest}
+            review={store.activeReview}
+            loading={store.loading.pr}
+            reviewing={store.loading.review}
+            onRunReview={store.runReview}
           />
         </div>
 
         <ReviewHistory
-          reviews={reviews}
-          loading={reviewsLoading}
-          onSelect={openReviewFromHistory}
+          reviews={store.reviews}
+          loading={store.loading.reviews || store.loading.history || store.loading.delete}
+          onSelect={store.openHistory}
+          onDelete={store.deleteReview}
         />
       </section>
     </main>

@@ -1,15 +1,30 @@
+import { useEffect } from 'react'
+import { useStore } from './store'
 import { LoginPage } from './pages/LoginPage'
 import { DashboardPage } from './pages/DashboardPage'
-import { useAuth } from './hooks/useAuth'
 
-function App() {
-  const { token, loading, error, login } = useAuth()
+export default function App() {
+  const token = useStore((s) => s.token)
+  const theme = useStore((s) => s.theme)
+  const exchangeCode = useStore((s) => s.exchangeCode)
 
-  if (!token) {
-    return <LoginPage loading={loading.auth} error={error} onLogin={login} />
-  }
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme)
+  }, [theme])
 
-  return <DashboardPage />
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const oauthError = params.get('error_description') || params.get('error')
+
+    if (oauthError && !token) {
+      useStore.setState({ error: oauthError.replace(/\+/g, ' ') })
+      window.history.replaceState({}, '', window.location.pathname)
+      return
+    }
+
+    const code = params.get('code')
+    if (code && !token) exchangeCode(code)
+  }, [token, exchangeCode])
+
+  return token ? <DashboardPage /> : <LoginPage />
 }
-
-export default App

@@ -125,7 +125,6 @@ button {
 .brand,
 .user-pill,
 .panel-header,
-.history-row,
 .score-block {
   display: flex;
   align-items: center;
@@ -150,7 +149,7 @@ button {
 .brand span,
 .list-item span,
 .pr-row span,
-.history-row span,
+.history-row-main span,
 .eyebrow,
 .search span,
 .stat span {
@@ -197,8 +196,7 @@ button {
 }
 
 .list-item,
-.pr-row,
-.history-row {
+.pr-row {
   width: 100%;
   border: 1px solid var(--line);
   border-radius: 8px;
@@ -206,17 +204,12 @@ button {
   text-align: left;
   color: var(--text);
   background: var(--panel);
-}
-
-.list-item,
-.pr-row {
   display: grid;
   gap: 4px;
 }
 
 .list-item.active,
-.pr-row.active,
-.history-row:hover {
+.pr-row.active {
   border-color: var(--accent);
   background: var(--panel-strong);
 }
@@ -265,6 +258,22 @@ button {
   border: 0;
   color: var(--muted);
   background: transparent;
+}
+
+.icon-button {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--text);
+  background: var(--panel-strong);
+}
+
+.icon-button:hover {
+  border-color: var(--accent);
+  color: var(--accent);
 }
 
 .content-grid {
@@ -413,8 +422,41 @@ button {
 
 .history-row {
   display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+  align-items: stretch;
+}
+
+.history-row-main {
+  display: grid;
   grid-template-columns: 1fr 1.4fr auto;
   gap: 12px;
+  align-items: center;
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 13px;
+  text-align: left;
+  color: var(--text);
+  background: var(--panel);
+}
+
+.history-row-main:hover {
+  border-color: var(--accent);
+  background: var(--panel-strong);
+}
+
+.history-delete {
+  border: 1px solid var(--alert-border);
+  border-radius: 8px;
+  padding: 0 14px;
+  color: var(--alert-text);
+  background: var(--alert-bg);
+  font-weight: 700;
+}
+
+.history-delete:hover {
+  border-color: var(--danger);
 }
 
 .empty {
@@ -461,7 +503,8 @@ button {
   }
 
   .stats,
-  .history-row {
+  .history-row,
+  .history-row-main {
     grid-template-columns: 1fr;
   }
 }

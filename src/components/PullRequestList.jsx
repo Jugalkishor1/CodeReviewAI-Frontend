@@ -14,16 +14,17 @@ export function PullRequestList({
         </div>
         {loading && <span className="loader">Syncing</span>}
       </div>
+
       <div className="pr-list">
-        {pullRequests.map((pullRequest) => (
+        {pullRequests.map((pr) => (
           <button
-            key={pullRequest.id}
+            key={pr.id}
             type="button"
-            className={selectedPullRequest?.id === pullRequest.id ? 'pr-row active' : 'pr-row'}
-            onClick={() => onSelect(pullRequest)}
+            className={selectedPullRequest?.id === pr.id ? 'pr-row active' : 'pr-row'}
+            onClick={() => onSelect(pr)}
           >
-            <strong>#{pullRequest.number} {pullRequest.title}</strong>
-            <span>{pullRequest.author} · {pullRequest.branch} · {pullRequest.commits} commits</span>
+            <strong>#{pr.number} {pr.title}</strong>
+            <span>{pr.author} · {pr.branch} · {pr.commits} commits</span>
           </button>
         ))}
         {!pullRequests.length && repository && !loading && (

@@ -12,7 +12,7 @@ export function Sidebar({
         <div className="mark">PR</div>
         <div>
           <strong>ReviewAI</strong>
-          <span>Gemini code review</span>
+          <span>AI code review</span>
         </div>
       </div>
 
@@ -20,7 +20,7 @@ export function Sidebar({
         <span>Search repositories</span>
         <input
           value={search}
-          onChange={(event) => onSearchChange(event.target.value)}
+          onChange={(e) => onSearchChange(e.target.value)}
           placeholder="owner/repo"
         />
       </label>
@@ -29,16 +29,17 @@ export function Sidebar({
         <span>Repositories</span>
         {loading && <small>Loading</small>}
       </div>
+
       <div className="repo-list">
-        {repositories.map((repository) => (
+        {repositories.map((repo) => (
           <button
-            key={repository.id}
+            key={repo.id}
             type="button"
-            className={selectedRepository?.id === repository.id ? 'list-item active' : 'list-item'}
-            onClick={() => onSelectRepository(repository)}
+            className={selectedRepository?.id === repo.id ? 'list-item active' : 'list-item'}
+            onClick={() => onSelectRepository(repo)}
           >
-            <strong>{repository.full_name}</strong>
-            <span>{repository.private ? 'Private' : 'Public'}</span>
+            <strong>{repo.full_name}</strong>
+            <span>{repo.private ? 'Private' : 'Public'}</span>
           </button>
         ))}
       </div>

@@ -3,11 +3,7 @@ function ReviewList({ title, items = [] }) {
     <section>
       <h3>{title}</h3>
       {items.length ? (
-        <ul>
-          {items.map((item, index) => (
-            <li key={`${title}-${index}`}>{item}</li>
-          ))}
-        </ul>
+        <ul>{items.map((item, i) => <li key={`${title}-${i}`}>{item}</li>)}</ul>
       ) : (
         <p className="empty">None reported.</p>
       )}
@@ -16,13 +12,8 @@ function ReviewList({ title, items = [] }) {
 }
 
 export function ReviewCard({ review, loading }) {
-  if (loading) {
-    return <div className="review-card skeleton">Gemini is reading the diff and preparing a review...</div>
-  }
-
-  if (!review) {
-    return <div className="review-card empty">No AI review yet. Run a review to create one.</div>
-  }
+  if (loading) return <div className="review-card skeleton">AI is reviewing the diff...</div>
+  if (!review) return <div className="review-card empty">No AI review yet. Run a review to create one.</div>
 
   return (
     <div className="review-card">
@@ -40,14 +31,14 @@ export function ReviewCard({ review, loading }) {
       <section>
         <h3>File-by-file comments</h3>
         <div className="file-comments">
-          {(review.file_comments || []).map((item, index) => (
-            <div className="file-comment" key={`${item.file}-${item.line}-${index}`}>
+          {(review.file_comments || []).map((item, i) => (
+            <div className="file-comment" key={`${item.file}-${i}`}>
               <strong>{item.file}{item.line ? `:${item.line}` : ''}</strong>
               <span>{item.severity || 'note'}</span>
               <p>{item.comment}</p>
             </div>
           ))}
-          {!review.file_comments?.length && <p className="empty">No file-specific comments returned.</p>}
+          {!review.file_comments?.length && <p className="empty">No file-specific comments.</p>}
         </div>
       </section>
     </div>
