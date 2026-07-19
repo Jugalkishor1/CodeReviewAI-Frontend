@@ -4,6 +4,17 @@ React + Vite UI for AI-powered GitHub pull request reviews.
 
 **Backend repo:** [CodeReviewAI-Backend](https://github.com/Jugalkishor1/CodeReviewAI-Backend)
 
+## Screenshots
+
+### Login
+
+![Login screen](docs/images/Screenshot-1.png)
+
+### Dashboard
+
+![Dashboard with PR review](docs/images/Screenshot-2.png)
+![Dashboard with PR review](docs/images/Screenshot-3.png)
+
 ## Stack
 
 - React 19 + Vite
@@ -62,6 +73,7 @@ src/
   store.js             # Zustand store
   pages/               # Login, Dashboard
   components/          # UI pieces
+docs/images/           # README screenshots
 ```
 
 ## Production (Vercel)
