@@ -24,9 +24,9 @@ export function api(baseUrl, token) {
   }
 
   return {
-    authWithGithub: (code) => request('/auth/github', {
+    authWithGithub: (code, redirectUri) => request('/auth/github', {
       method: 'POST',
-      body: JSON.stringify({ code }),
+      body: JSON.stringify({ code, redirect_uri: redirectUri }),
     }),
     me: () => request('/me'),
     repositories: (search = '') => request(`/repositories?search=${encodeURIComponent(search)}`),

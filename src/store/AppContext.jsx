@@ -103,29 +103,35 @@ export function AppProvider({ children }) {
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
+    const oauthError = params.get('error_description') || params.get('error')
+    if (oauthError && !state.token) {
+      dispatch({ type: 'SET_ERROR', error: oauthError.replace(/\+/g, ' ') })
+      window.history.replaceState({}, document.title, window.location.pathname)
+      return
+    }
+
     const code = params.get('code')
     if (!code || state.token) return
 
-    let cancelled = false
+    // OAuth codes are single-use. Mark synchronously so remounts cannot redeem twice.
+    const codeKey = `oauth_code_${code}`
+    if (sessionStorage.getItem(codeKey)) return
+    sessionStorage.setItem(codeKey, '1')
+
     setLoading('auth', true)
-    client.authWithGithub(code)
+    client.authWithGithub(code, REDIRECT_URI)
       .then((payload) => {
-        if (cancelled) return
         localStorage.setItem(AUTH_TOKEN_KEY, payload.token)
         dispatch({ type: 'SET_TOKEN', token: payload.token })
         dispatch({ type: 'SET_USER', user: payload.user })
         window.history.replaceState({}, document.title, window.location.pathname)
       })
       .catch((error) => {
-        if (!cancelled) handleError(error)
+        sessionStorage.removeItem(codeKey)
+        handleError(error)
+        window.history.replaceState({}, document.title, window.location.pathname)
       })
-      .finally(() => {
-        if (!cancelled) setLoading('auth', false)
-      })
-
-    return () => {
-      cancelled = true
-    }
+      .finally(() => setLoading('auth', false))
   }, [client, handleError, setLoading, state.token])
 
   useEffect(() => {
